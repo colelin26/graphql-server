@@ -46,7 +46,7 @@ class GraphQLView(View):
     default_query = None
     header_editor_enabled = None
     should_persist_headers = None
-    enable_async = True
+    enable_async = False
 
     methods = ["GET", "POST", "PUT", "DELETE"]
 
@@ -81,7 +81,7 @@ class GraphQLView(View):
     @staticmethod
     def get_async_execution_results(execution_results):
         async def await_execution_results(execution_results):
-            return [ex if ex is None or is_awaitable(ex) else await ex for ex in execution_results]
+            return [ex if ex is None or not is_awaitable(ex) else await ex for ex in execution_results]
 
         return asyncio.run(await_execution_results(execution_results))
 
@@ -108,6 +108,7 @@ class GraphQLView(View):
                 context_value=self.get_context(),
                 middleware=self.get_middleware(),
                 validation_rules=self.get_validation_rules(),
+                run_sync=not self.enable_async,
             )
 
             if self.enable_async:
