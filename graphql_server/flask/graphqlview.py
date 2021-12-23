@@ -122,20 +122,6 @@ class GraphQLView(View):
             pretty = self.pretty or show_graphiql or request.args.get("pretty")
 
             all_params: List[GraphQLParams]
-            execution_results, all_params = run_http_query(
-                self.schema,
-                request_method,
-                data,
-                query_data=request.args,
-                batch_enabled=self.batch,
-                catch=catch,
-                # Execute options
-                root_value=self.get_root_value(),
-                context_value=self.get_context(),
-                middleware=self.get_middleware(),
-                validation_rules=self.get_validation_rules(),
-                run_sync=not self.enable_async,
-            )
 
             if self.enable_async:
                 execution_results, all_params = self.get_async_execution_results(request_method, data, catch)
